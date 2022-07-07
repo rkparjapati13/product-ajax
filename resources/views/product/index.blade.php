@@ -3,12 +3,9 @@
 @section('content')
 <div class="top-brands">
    <div class="container">
-     <div  class="col success-message" >
-        <p class="alert alert-success" id='msg'></p>
-     </div>
       <h2>Top selling offers</h2>
       <div class="sorting-left">
-          <select id="category-filter" onchange="category(this)" class="frm-field required sect">
+          <select id="category-filter" onchange="category(this)" class="form-control">
             <option value="">Select Category</option>
             @foreach($categories as $category)
               <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -30,8 +27,9 @@
 </div>
 @endsection
 @section('javascript')
+
 <script type="text/javascript">
-$(function () {
+    $(function () {
 
         $('body').on('click', '.pagination a', function (e) {
             e.preventDefault();
@@ -49,17 +47,19 @@ $(function () {
             console.log("Failed to load data!");
         });
     }
-    $(document).ready(function() {
-        // $('.success-message').hide();
-    })
+
     function category(_this) {
         var url = "{{ route('product.index') }}" + '?category_id=' + _this.value;
         getProducts(url);
     }
 
-    $('.add-cart').on('click', function(e){
-        e.preventDefault();
-        let form =  $(this).closest('form');
+    function addCart(el) {
+        toastr.options = {
+          "closeButton": true,
+          "newestOnTop": true,
+          "positionClass": "toast-top-right"
+        };
+        let form =  $(el).closest('form');
         let formData = form.serialize();
         let formActionUrl = form.attr('action');
         let type = form.attr('method');
@@ -68,20 +68,44 @@ $(function () {
           type: type,
           data: formData,
           success:function(response){
-            // $('#card-data').append(response.data);
+            $('#card-data').empty().append(response.data);
             $('.custom-badge').text(response.count);
             if (response.status) {
-              // $('.success-message').show();
-              $('#msg').text(response.success);
-              $("#msg").fadeOut(5000);
+              setTimeout(() => {
+                toastr.success(response.success);
+                },500)
               form[0].reset();
             }
+            var url = "{{ route('product.index') }}";
+            getProducts(url);
           },
         }).done(function() {
           setTimeout(function(){
             $("#overlay").fadeOut(300);
           },500);
         });
-      });
+    }
+
+    function deleteProduct(id, t) {
+        var tr= $(t).closest("tr");
+        let url = "{{ route('product.delete', '') }}"+"/"+id;
+
+        $.ajax({
+            type: "POST",
+            data: { 'id':id,
+                    '_token': "{{ csrf_token() }}" },
+            url: url,
+            success: function(data){
+              if(data.status) {
+                tr.find('td').fadeOut(700, function () {
+                    tr.remove();
+                });
+                $('.custom-badge').text(data.count);
+                var url = "{{ route('product.index') }}";
+                getProducts(url);
+              }
+            }
+        });
+    }
 </script>
 @endsection

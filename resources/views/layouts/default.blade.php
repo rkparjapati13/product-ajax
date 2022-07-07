@@ -26,6 +26,8 @@
     <!-- JavaScript Bundle with Popper -->
     <script src="assets/js/bootstrap.min.js"></script>
     <script src="assets/js/minicart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
     @yield('javascript')
 
   </body>

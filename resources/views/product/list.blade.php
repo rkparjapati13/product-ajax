@@ -1,6 +1,11 @@
 <div class="agile_top_brands_grids">
     @foreach($products as $product)
-       <div class="col-md-4 top_brand_left"  style="margin-bottom: 20px">
+    @php
+      $quantity = $product->quantity;
+      $orderd = $product->orderd_quantity ?? 0;
+      $left_quantity = $quantity - $orderd;
+    @endphp
+       <div class="col-md-4 top_brand_left"  style="margin-bottom: 20px; {{ $left_quantity == 0 ? 'pointer-events: none' :'' }}">
           <div class="hover14 column">
              <div class="agile_top_brand_left_grid">
                 <div class="agile_top_brand_left_grid_pos">
@@ -10,7 +15,7 @@
                    <figure>
                       <div class="snipcart-item block" >
                          <div class="snipcart-thumb">
-                            <a href="products.html"><img title=" " alt=" " src="assets/images/{{ $product->image }}" /></a>
+                            <a href="JavaScript:Void(0);"><img title=" " alt=" " src="assets/images/{{ $product->image }}" /></a>
                             <p>{{ $product->name }}</p>
                             <h4>${{ number_format($product->price, 2) }}</h4>
                          </div>
@@ -22,15 +27,15 @@
                                <div class="d-flex justify-content-between">
                                  <select class="form-control" name="qunatity" aria-label="Default select example">
                                     <option value="1">Select Qunatity</option>
-                                    @for($i=1; $i <= $product->quantity; $i++)
-                                    <option value="{{ $i }}" @if ($i == '1') ? selected : ''@endif>{{ $i }}</option>
+                                    @for($i=1; $i <= $left_quantity; $i++)
+                                      <option value="{{ $i }}" @if ($i == '1') ? selected : ''@endif>{{ $i }}</option>
                                     @endfor
                                  </select>
                                </div>
                             </div>
                                <fieldset>
                                   <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                  <input type="button" name="button" value="Add to cart" class="add-cart button" />
+                                  <input type="button" name="button" value="Add to cart" onclick="addCart(this)" class="add-cart button" />
                                </fieldset>
                             </form>
                          </div>
